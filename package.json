@@ -1,0 +1,39 @@
+{
+  "name": "@gen3/arranger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bin/server.js",
+  "scripts": {
+    "compile": "npx tsc -p ./tsconfig.json --outDir . --rootDir src/@gen3/arranger",
+    "watch": "npx tsc -p ./tsconfig.json --outDir . --rootDir src/@gen3/arranger --watch",
+    "test": "npm run-script compile && npx jasmine --config=jasmine.json",
+    "start": "npm run-script compile && node bin/server.js",
+    "eslint": "eslint --ext ts src",
+    "elint": "eslint --ext ts "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uc-cdis/gen3-arranger.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uc-cdis/gen3-arranger/issues"
+  },
+  "homepage": "https://github.com/uc-cdis/gen3-arranger#readme",
+  "devDependencies": {
+    "@types/express": "^4.16.0",
+    "@types/jasmine": "^2.8.8",
+    "@types/node": "^10.5.2",
+    "eslint": "^5.1.0",
+    "eslint-config-airbnb": "^17.0.0",
+    "jasmine": "^3.1.0",
+    "jasmine-core": "^3.1.0",
+    "typescript": "^2.9.2",
+    "typescript-eslint-parser": "^16.0.1"
+  },
+  "dependencies": {
+    "@arranger/server": "^0.4.8",
+    "express": "^4.16.3"
+  }
+}
