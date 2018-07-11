@@ -26,3 +26,8 @@ Override the default configuration with environment variables:
 
 * `GEN3_ES_ENDPOINT` - default is `esproxy-service`
 * `GEN3_PROJECT_ID` - default is `dev` - arranger interacts with the ES index with name `arranger-projects-$Id`
+
+## Docker
+
+(Quay)[https://quay.io/repository/cdis/arranger]
+
