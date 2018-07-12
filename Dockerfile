@@ -5,12 +5,13 @@ FROM ubuntu:16.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get upgrade -y \
+RUN apt-get update
+RUN apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        build-essential \
         ca-certificates \
         curl \
         git \
+        sudo \
         vim \
     && curl -sL https://deb.nodesource.com/setup_10.x | bash - \ 
     && apt-get install -y --no-install-recommends nodejs \
@@ -22,9 +23,13 @@ RUN apt-get update && apt-get upgrade -y \
 # non-standard deployment environments
 #
 RUN mkdir /mnt/ssl \
-    && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /mnt/ssl/nginx.key -out /mnt/ssl/nginx.crt -subj '/countryName=US/stateOrProvinceName=Illinois/localityName=Chicago/organizationName=CDIS/organizationalUnitName=PlanX/commonName=localhost/emailAddress=ops@cdis.org'
+    && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /mnt/ssl/service.key -out /mnt/ssl/service.crt -subj '/countryName=US/stateOrProvinceName=Illinois/localityName=Chicago/organizationName=CDIS/organizationalUnitName=PlanX/commonName=localhost/emailAddress=ops@cdis.org'
 COPY . /arranger
-RUN useradd -m -s /bin/bash gen3 && chown -R gen3: /arranger
+RUN useradd -m -s /bin/bash gen3 \
+  && chown -R gen3: /arranger \
+  && cp /arranger/dockerHelpers/sudoers /etc/sudoers \
+  && rm /arranger/dockerHelpers/sudoers 
+
 USER gen3
 
 WORKDIR /arranger
@@ -35,4 +40,12 @@ RUN COMMIT=`git rev-parse HEAD` && echo "export const arrangerCommit = \"${COMMI
     && npm ci \
     && npm run compile
 
-CMD node bin/server.js
+# 
+# Do some cleanup to trim down the image
+#
+USER root
+RUN bash /arranger/dockerHelpers/dockerCleanup.sh && rm /arranger/dockerHelpers/dockerCleanup.sh
+
+USER gen3
+
+CMD bash dockerHelpers/dockerStart.sh
