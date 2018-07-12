@@ -13,6 +13,7 @@ export class Configuration {
    * Arranger will query the elastic-search index with name: arranger-projects-$Id
    */
   projectId: string = 'dev';
+  graphqlOptions:{[key:string]:string} = {};
 }
 
 export const singleton = new Configuration();
