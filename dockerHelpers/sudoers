@@ -1,0 +1,1 @@
+gen3 ALL=(ALL) NOPASSWD: /usr/sbin/update-ca-certificates
