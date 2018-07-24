@@ -16,6 +16,19 @@ const io = socketIO(server);
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json({ limit: '50mb' }));
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  // intercept OPTIONS method
+  if ('OPTIONS' == req.method) {
+    res.send(204);
+  }
+  else {
+    next();
+  }
+});
+
 app.use(router);
 
 app.get('/_status', async function(req, res) {
