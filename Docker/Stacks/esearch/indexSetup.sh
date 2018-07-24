@@ -1,71 +1,26 @@
 #!/bin/bash
+#
+# Source this file to pickup some helper functions
+#
 
-ESHOST="esproxy-service:9200"
-curl -iv -X DELETE "${ESHOST}/arranger-projects-dev"
-curl -iv -X DELETE "${ESHOST}/gen3-dev-subject"
-curl -iv -X DELETE "${ESHOST}/arranger-projects-dev-gen3-dev-subject"
+export ESHOST="esproxy-service:9200"
+export ESHOST="localhost:9200"
 
 #
-# Arranger has a "projects" index that references
-# types in other indexes
+# Delete all the indexes out of ES
 #
-curl -iv -X PUT "${ESHOST}/arranger-projects-dev" \
--H 'Content-Type: application/json' -d'
-{
-    "settings" : {
-        "index" : {
-            "number_of_shards" : 1, 
-            "number_of_replicas" : 0 
-        }
-    },
-    "mappings" : {
-      "arranger-projects-dev" : {
-        "properties" : {
-          "active" : {
-            "type" : "boolean"
-          },
-          "config" : {
-            "type" : "object"
-          },
-          "esType" : {
-            "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword",
-                "ignore_above" : 256
-              }
-            }
-          },
-          "index" : {
-            "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword",
-                "ignore_above" : 256
-              }
-            }
-          },
-          "name" : {
-            "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword",
-                "ignore_above" : 256
-              }
-            }
-          },
-          "timestamp" : {
-            "type" : "date"
-          }
-        }
-      }
-    }
+function es_delete_all() {
+  indexList="$(es_indices 2> /dev/null | awk '{ print $3 }')"
+  for name in $indexList; do
+    curl -iv -X DELETE "${ESHOST}/$name"
+  done
 }
-'
+
 
 #
-# `subject` index for arranger-projects-dev project
+# Setup `subject` index for arranger-projects-dev project
 #
+function es_setup_index() {
 curl -iv -X PUT "${ESHOST}/gen3-dev-subject" \
 -H 'Content-Type: application/json' -d'
 {
@@ -79,8 +34,8 @@ curl -iv -X PUT "${ESHOST}/gen3-dev-subject" \
       "subject": {
         "properties": {
           "name": { "type": "text" },
-          "project": { "type": "text" },
-          "study": { "type": "text" },
+          "project": { "type": "keyword" },
+          "study": { "type": "keyword" },
           "gender": { "type": "keyword" },
           "race": { "type": "keyword" },
           "ethnicity": { "type": "keyword" },
@@ -92,32 +47,14 @@ curl -iv -X PUT "${ESHOST}/gen3-dev-subject" \
     }
 }
 '
-
-#
-# Arranger type/field data for `subject` index - ugh!
-#
-curl -iv -X PUT "${ESHOST}/arranger-projects-dev-gen3-dev-subject" \
--H 'Content-Type: application/json' -d'
-{
-    "settings" : {
-        "index" : {
-            "number_of_shards" : 1, 
-            "number_of_replicas" : 0 
-        }
-    },
-    "mappings": {
-      "arranger-projects-dev-gen3-dev-subject": {
-        "properties": {
-          "field": { "type": "text" },
-          "type": { "type": "text" }
-        }
-      }
-    }
 }
-'
 
-curl -X GET "${ESHOST}/_cat/health?v"
 
+#
+# Dump the contents of a given index
+#
+# @parma indexName
+#
 function es_dump() {
   local indexName
   indexName=$1
@@ -131,10 +68,17 @@ curl -X GET "${ESHOST}/${indexName}/_search?pretty=true" \
 
 }
 
+#
+# Get the list of indexes
+#
 function es_indices() {
   curl -X GET "${ESHOST}/_cat/indices?v"
 }
 
+#
+# Dump the arranger config indexes to the given destination folder
+# @param destFolder
+#
 function es_export() {
   local destFolder
   local indexList
@@ -149,7 +93,9 @@ function es_export() {
   done
 }
 
-
+#
+# Import the arranger config indexes dumped with es_export 
+#
 function es_import() {
   local destFolder
   local indexList
@@ -164,49 +110,19 @@ function es_import() {
   done
 }
 
+#
+# Get the mapping of a given index
+#
 function es_mapping() {
   local indexName
   indexName=$1
   curl -X GET $ESHOST/_mapping/${indexName}?pretty=true
 }
 
-
-#------------------------------------
-
-curl -X PUT "${ESHOST}/arranger-projects-dev/arranger-projects-dev/1?pretty" -H 'Content-Type: application/json' -d'
-{
-  "index": "gen3-dev-subject",
-  "name": "subject",
-  "esType": "subject"
-}
-'
-
-#---------------------------
-
-curl -X PUT "${ESHOST}/arranger-projects-dev-gen3-dev-subject/arranger-projects-dev-gen3-dev-subject/_bulk" -H 'Content-Type: application/json' --data-binary '
-{ "create": { "_id": "1"}}  
-{"field": "name","type": "String"}
-{ "create": {"_id": "2"}}  
-{"field": "project","type": "String"}
-{ "create": {"_id": "3"}}  
-{"field": "study","type": "String"}
-{ "create": {"_id": "4"}}  
-{"field": "gender","type": "keyword"}
-{ "create": {"_id": "5"}}  
-{"field": "race","type": "keyword"}
-{ "create": {"_id": "6"}}  
-{"field": "ethnicity","type": "keyword"}
-{ "create": {"_id": "7"}}  
-{"field": "vital_status","type": "keyword"}
-{ "create": {"_id": "8"}}  
-{"field": "file_type","type": "keyword"}
-{ "create": {"_id": "9"}}  
-{"field": "file_format","type": "keyword"}
-'
-
-#--------------------------------------
-
-function indexRecords() {
+#
+# Generate test data in gen3-dev-subject index
+#
+function es_gen_data() {
   local startIndex
   local endIndex
   local COUNT
@@ -265,7 +181,9 @@ done
 }
 
 #--------------------------
+# GraphQL queries
 
+if false; then
 
 curl -X GET "${ESHOST}/arranger-projects-dev-gen3-dev-subject/_search" \
 -H 'Content-Type: application/json' -d'
@@ -351,21 +269,12 @@ curl  -X POST https://abby.planx-pla.net/api/v0/flat-search/search/graphql \
 curl  -X POST https://abby.planx-pla.net/api/v0/flat-search/search/graphql \
 -H 'Content-Type: application/json' -d'
 {
-"query":"query subject($sqon: JSON, $include_missing: Boolean) { 
-  subject { 
-    hits( filters: $sqon) { total }
-    aggregations(filters: $sqon, include_missing: $include_missing) {
-      size {
-        stats {
-          sum
-        }
-      }
-    }
-  }
-}",
+"query":"query subject($sqon: JSON, $include_missing: Boolean) { subject { hits( filters: $sqon) { total } aggregations(filters: $sqon, include_missing: $include_missing) {}",
 "variables": "{ sqon: {}, include_missing: true }"
 ';
 
 
 # 'query { subject { hits{ edges{ node {name} } } }'
 # result: {"data":{"subject":{"__typename":"subject","mapping":{"count":{"type":"integer"},"name":{"type":"text"}},"hits":{"total":2,"edges":[{"node":{"name":"A0","count":0}},{"node":{"name":"A1","count":1}}]}}}}
+
+fi
