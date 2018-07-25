@@ -10,12 +10,25 @@ import { singleton as config } from '../lib/config';
 
 
 const app = express();
-const http = new Server(app);
-const io = socketIO(http);
+const server = new Server(app);
+const io = socketIO(server);
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json({ limit: '50mb' }));
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  // intercept OPTIONS method
+  if ('OPTIONS' == req.method) {
+    res.send(204);
+  }
+  else {
+    next();
+  }
+});
+
 app.use(router);
 
 app.get('/_status', async function(req, res) {
@@ -37,15 +50,15 @@ startProject(
   (router) => {
     app.use('/search', router);
   },
-  () => {
-    console.log('WARNING: arranger project not started');
+  (err) => {
+    console.log('WARNING: arranger project not started', err);
   }
 ).then(
   function() {
     app.get('/*', function(req, res) {
       res.status(404).json({ "message": "no such path" });
     });    
-    http.listen(port, () => {
+    server.listen(port, () => {
       console.log(`⚡️ Listening on port ${port} ⚡️`);
     });
   }
