@@ -146,7 +146,7 @@ fileFormatList=( BEM BAM BED CSV FASTQ RAW TAR TSV TXT IDAT )
 
 COUNT=$startIndex
 XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}"
-tmpName="$(mktemp -p $XDG_RUNTIME_DIR es.json.XXXXXX)"
+tmpName="$(mktemp $XDG_RUNTIME_DIR/es.json.XXXXXX)"
 while [[ $COUNT -lt $endIndex ]]; do
   projectIndex=$(( $RANDOM % 5 ))
   studyIndex=$(( $RANDOM % 10 ))
