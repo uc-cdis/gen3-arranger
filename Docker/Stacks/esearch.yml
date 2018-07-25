@@ -39,7 +39,7 @@ services:
       LOGGING_QUIET: "true"
 
   arranger_server:
-    image: quay.io/cdis/arranger-server:arranger-docker
+    image: quay.io/cdis/arranger-server:master
     ports:
       - "5050:5050"
     environment:
@@ -50,7 +50,7 @@ services:
       - elasticsearch
 
   arranger_dashboard:
-    image: quay.io/cdis/arranger-dashboard:arranger-docker
+    image: quay.io/cdis/arranger-dashboard:master
     ports:
       - "6060:6060"
     environment:
