@@ -2,7 +2,7 @@
  * Encapsulate configuration for the arranger server.
  */
 export class Configuration {
-  esEndpoint: string = 'esproxy-service';
+  esEndpoint: string = 'esproxy-service:9200';
   /**
    * @property arboristEndpoint
    * Note: a value of 'mock' indicates a mock arborist
