@@ -19,8 +19,7 @@ RUN git clone https://github.com/overture-stack/arranger.git \
     && npm i \
     && npm run bootstrap 
 
-ARG PORT=5050
-EXPOSE $PORT
+EXPOSE 5050
 
 WORKDIR /arranger
 CMD npm run server
