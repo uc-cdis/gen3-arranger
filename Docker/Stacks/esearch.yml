@@ -38,6 +38,30 @@ services:
     environment:
       LOGGING_QUIET: "true"
 
+  arranger_server:
+    image: arranger-server
+    ports:
+      - "5050:5050"
+    environment:
+      ES_HOST: "elasticsearch:9200"
+    networks:
+      - es
+    depends_on:
+      - elasticsearch
+
+  arranger_dashboard:
+    image: arranger-dashboard
+    ports:
+      - "6060:6060"
+    environment:
+      ES_HOST: "elasticsearch:9200"
+      ARRANGER_API: "arranger_server:5050"
+    networks:
+      - es
+    depends_on:
+      - elasticsearch
+      - arranger_server
+
 volumes:
   esdata:
   
