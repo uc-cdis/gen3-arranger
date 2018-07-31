@@ -3,52 +3,41 @@ import { singleton as config } from './config';
 
 export interface Arborist {
   endpoint: string;
-  checkAuthorization: {string: Function};
+  listAuthorizedResources: (string) => string[];
 }
 
 class MockArborist implements Arborist {
   endpoint;
-  checkAuthorization;
+  listAuthorizedResources = (jwt: string): string[] => {
+    return ['Proj-1'];
+  }
 }
 
 class ArboristClient implements Arborist {
-  public endpoint;
-  public checkAuthorization;
+  endpoint;
   constructor(arboristEndpoint: string) {
     this.endpoint = arboristEndpoint;
-    this.checkAuthorization = {Root: this.authFilter}
   }
-  public authFilter = (resolve, parentArg, args, context, info) => {
+  listAuthorizedResources = (jwt: string): string[] => {
+    if (!jwt) {
+      return [];
+    }
     // Make request to arborist for list of resources with access
     const resourcesEndpoint = this.endpoint + '/auth/resources'
     const resources: string[] = fetch(
-      resourcesEndpoint, 
+      resourcesEndpoint,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ user: { token: context.jwt } }),
+        body: JSON.stringify({ user: { token: jwt } }),
       }
     ).then(
       (response) => response.json().resources,
       (err) => [],
     );
-    // TODO: how to apply filter correctly?
-    args = {
-      variables: {
-        sqon: {
-          filter: {
-            'op': 'in',
-            'content': {
-              'field': 'node.project',
-              'value': ['Proj-1', 'Proj-2'],
-            },
-          }
-        }
-      }
-    }
-    return resolve(parentArg, args, context, info);
+    return resources;
   }
 }
 

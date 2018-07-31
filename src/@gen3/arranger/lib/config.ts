@@ -7,7 +7,8 @@ export class Configuration {
    * @property arboristEndpoint
    * Note: a value of 'mock' indicates a mock arborist
    */
-  arboristEndpoint: string = 'http://arborist-service';
+  //arboristEndpoint: string = 'http://arborist-service';
+  arboristEndpoint: string = 'mock';
   /**
    * @property projectId
    * Arranger will query the elastic-search index with name: arranger-projects-$Id

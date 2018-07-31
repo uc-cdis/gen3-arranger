@@ -8,8 +8,7 @@ import * as bodyParser from 'body-parser';
 import startProject from '@arranger/server/dist/startProject';
 import { checkHealth } from '../lib/healthCheck';
 import { singleton as config } from '../lib/config';
-import { singleton as arborist } from '../lib/arboristClient';
-
+import { authFilter } from '../lib/graphqlMiddleware';
 
 const app = express();
 const server = new Server(app);
@@ -63,12 +62,11 @@ const port = 3000;
 const es = new elasticsearch.Client({ host: config.esEndpoint });
 
 const graphqlMiddleware = {
-  // Pass `jwt` field on the context through to the middleware functions.
+  // Pass `jwt` field on the context through to the middleware funcitons.
   context: ({ jwt }) => ({ jwt }),
-  middleware: [arborist.checkAuthorization],
+  middleware: [authFilter],
 };
 const graphqlOptions = {...graphqlMiddleware, ...config.graphqlOptions}
-//const graphqlOptions = config.graphqlOptions
 
 startProject({
   es,
