@@ -61,11 +61,15 @@ app.use(
 const port = 3000;
 const es = new elasticsearch.Client({ host: config.esEndpoint });
 
+// Add some GraphQL middleware which applies an authorization filter to GraphQL
+// requests by checking permissions from arborist.
 const graphqlMiddleware = {
   // Pass `jwt` field on the context through to the middleware funcitons.
   context: ({ jwt }) => ({ jwt }),
   middleware: [authFilter],
 };
+// These graphqlOptions get passed to arranger for setting up the arranger
+// server with this middleware.
 const graphqlOptions = {...graphqlMiddleware, ...config.graphqlOptions}
 
 startProject({

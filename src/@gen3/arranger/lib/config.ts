@@ -7,7 +7,9 @@ export class Configuration {
    * @property arboristEndpoint
    * Note: a value of 'mock' indicates a mock arborist
    */
-  //arboristEndpoint: string = 'http://arborist-service';
+  // Ordinarily use something like this:
+  // arboristEndpoint: string = 'http://arborist-service';
+  // (NOTE: there is no trailing slash.)
   arboristEndpoint: string = 'mock';
   /**
    * @property projectId
