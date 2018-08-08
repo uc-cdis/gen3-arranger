@@ -3,14 +3,21 @@
 # Source this file to pickup some helper functions
 #
 
-export ESHOST="esproxy-service:9200"
-export ESHOST="localhost:9200"
+export ESHOST=${ESHOST:-"localhost:9200"}
 
 #
-# Delete all the indexes out of ES
+# Delete all the indexes out of ES that grep-match a given string
+# @param grepStr defaults to match everything
 #
 function es_delete_all() {
-  indexList="$(es_indices 2> /dev/null | awk '{ print $3 }')"
+  local grepStr
+  local indexList
+  grepStr=$1
+  if [[ -n "$grepStr" ]]; then
+    indexList=$(es_indices 2> /dev/null | awk '{ print $3 }' | grep "$grepStr")
+  else
+    indexList=$(es_indices 2> /dev/null | awk '{ print $3 }')
+  fi
   for name in $indexList; do
     curl -iv -X DELETE "${ESHOST}/$name"
   done
@@ -41,7 +48,8 @@ curl -iv -X PUT "${ESHOST}/gen3-dev-subject" \
           "ethnicity": { "type": "keyword" },
           "vital_status": { "type": "keyword" },
           "file_type": { "type": "keyword" },
-          "file_format": { "type": "keyword" }
+          "file_format": { "type": "keyword" },
+          "gen3_resource_path": { "type": "keyword" }
         }
       }
     }
@@ -97,16 +105,16 @@ function es_export() {
 # Import the arranger config indexes dumped with es_export 
 #
 function es_import() {
-  local destFolder
+  local sourceFolder
   local indexList
 
-  destFolder="$1"
+  sourceFolder="$1"
   #indexList="$(es_indices 2> /dev/null | grep arranger- | awk '{ print $3 }')"
-  indexList="$(ls -1 data | sed 's/__.*json$//' | sort -u)"
+  indexList="$(ls -1 $sourceFolder | sed 's/__.*json$//' | sort -u)"
   for name in $indexList; do
     echo $name
-    npx elasticdump --output http://$ESHOST/$name --input data/${name}__data.json --type data
-    npx elasticdump --output http://$ESHOST/$name --input data/${name}__mapping.json --type mapping
+    npx elasticdump --output http://$ESHOST/$name --input $sourceFolder/${name}__data.json --type data
+    npx elasticdump --output http://$ESHOST/$name --input $sourceFolder/${name}__mapping.json --type mapping
   done
 }
 
@@ -149,6 +157,11 @@ XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}"
 tmpName="$(mktemp $XDG_RUNTIME_DIR/es.json.XXXXXX)"
 while [[ $COUNT -lt $endIndex ]]; do
   projectIndex=$(( $RANDOM % 5 ))
+  projectName="Proj-${projIndex}"
+  if [[ $projectIndex == 0 ]]; then
+    # dev environments have a test project
+    projectName="test"
+  fi
   studyIndex=$(( $RANDOM % 10 ))
   gender="${genderList[$(( $RANDOM % ${#genderList[@]}))]}"
   ethnicity="${ethnicityList[$(( $RANDOM % ${#ethnicityList[@]}))]}"
@@ -160,14 +173,15 @@ while [[ $COUNT -lt $endIndex ]]; do
   cat - > "$tmpName" <<EOM
 {
   "name": "Subject-$COUNT",
-  "project": "Proj-${projectIndex}",
+  "project": "${projectName}",
   "study": "Study-${projectIndex}${studyIndex}",
   "gender": "${gender}",
   "ethnicity": "${ethnicity}",
   "race": "${race}",
   "vital_status": "${vital}",
   "file_type": "${fileType}",
-  "file_format": "${fileFormat}"
+  "file_format": "${fileFormat}",
+  "gen3_resource_path": "/projects/$projectName"
 }
 EOM
   cat - $tmpName <<EOM
