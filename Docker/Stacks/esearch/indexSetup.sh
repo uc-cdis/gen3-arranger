@@ -93,7 +93,7 @@ function es_export() {
 
   destFolder="$1"
   mkdir -p "$destFolder"
-  indexList="$(es_indices 2> /dev/null | grep arranger- | awk '{ print $3 }')"
+  indexList=$(es_indices 2> /dev/null | grep arranger- | awk '{ print $3 }')
   for name in $indexList; do
     echo $name
     npx elasticdump --input http://$ESHOST/$name --output ${destFolder}/${name}__data.json --type data
@@ -110,7 +110,7 @@ function es_import() {
 
   sourceFolder="$1"
   #indexList="$(es_indices 2> /dev/null | grep arranger- | awk '{ print $3 }')"
-  indexList="$(ls -1 $sourceFolder | sed 's/__.*json$//' | sort -u)"
+  indexList=$(ls -1 $sourceFolder | sed 's/__.*json$//' | sort -u)
   for name in $indexList; do
     echo $name
     npx elasticdump --output http://$ESHOST/$name --input $sourceFolder/${name}__data.json --type data
@@ -157,7 +157,7 @@ XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}"
 tmpName="$(mktemp $XDG_RUNTIME_DIR/es.json.XXXXXX)"
 while [[ $COUNT -lt $endIndex ]]; do
   projectIndex=$(( $RANDOM % 5 ))
-  projectName="Proj-${projIndex}"
+  projectName="Proj-${projectIndex}"
   if [[ $projectIndex == 0 ]]; then
     # dev environments have a test project
     projectName="test"
