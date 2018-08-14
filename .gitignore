@@ -4,5 +4,7 @@
 /spec/
 *.log
 *.swp
+*.tar
+*.tgz
 *~
 .DS_Store
