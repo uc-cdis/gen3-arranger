@@ -17,6 +17,10 @@ export class Configuration {
    */
   projectId: string = 'dev';
   graphqlOptions: {[key: string]: any} = {};
+  authFilterField: string = 'project';
+  authFilterFieldParser = (authField: string): string => {
+    return authField;
+  };
 }
 
 export const singleton = new Configuration()
@@ -27,6 +31,9 @@ if (process.env['GEN3_ES_ENDPOINT']) {
 }
 if (process.env['GEN3_ARBORIST_ENDPOINT']) {
   singleton.arboristEndpoint = process.env['GEN3_ARBORIST_ENDPOINT'];
+}
+if (process.env['GEN3_AUTH_FILTER_FIELD']) {
+  singleton.authFilterField = process.env['GEN3_AUTH_FILTER_FIELD'];
 }
 if (process.env['GEN3_PROJECT_ID']) {
   singleton.projectId = process.env['GEN3_PROJECT_ID'];

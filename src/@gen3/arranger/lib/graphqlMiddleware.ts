@@ -1,5 +1,6 @@
 import { parseResolveInfo } from "graphql-parse-resolve-info";
 import { singleton as arborist } from '../lib/arboristClient';
+import { singleton as config } from '../lib/config';
 
 // authFilterResolver is a GraphQL middleware function that adds some filters to
 // the arguments of a query in order to return only results which are authorized
@@ -20,16 +21,16 @@ const authFilterResolver = (resolve, parentArg, args, context, info) => {
   if (!('content' in args.filters)) {
     args.filters.content = []
   }
-  // Add operator to the filters checking that the `project` field on the
-  // graphql results is in the resources listed by arborist.
+  // Add operator to the filters checking that the relevant field on the graphql
+  // results is in the resources listed by arborist.
   args.filters.content = [
     ...args.filters.content,
     ...[
       {
         op: 'in',
         content: {
-          field: 'project',
-          value: resources,
+          field: config.authFilterField,
+          value: resources.map(config.authFilterFieldParser),
         }
       },
     ],
