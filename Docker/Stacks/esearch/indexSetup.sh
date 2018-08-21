@@ -67,7 +67,7 @@ function es_dump() {
   local indexName
   indexName=$1
 
-curl -X GET "${ESHOST}/${indexName}/_search?pretty=true" \
+curl -X GET "${ESHOST}/${indexName}/_search?pretty=true&size=100" \
 -H 'Content-Type: application/json' -d'
 {
   "query": { "match_all": {} }
@@ -124,7 +124,7 @@ function es_import() {
 function es_mapping() {
   local indexName
   indexName=$1
-  curl -X GET $ESHOST/_mapping/${indexName}?pretty=true
+  curl -X GET $ESHOST/${indexName}/_mapping?pretty=true
 }
 
 #
