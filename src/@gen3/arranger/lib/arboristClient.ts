@@ -24,10 +24,12 @@ class ArboristClient implements Arborist {
   }
   listAuthorizedResources = (jwt: string): string[] => {
     if (!jwt) {
+      console.log("no JWT in the context; returning no resources");
       return [];
     }
     // Make request to arborist for list of resources with access
     const resourcesEndpoint = this.baseEndpoint + '/auth/resources'
+    console.log("making request to arborist");
     const resources: string[] = fetch(
       resourcesEndpoint,
       {
@@ -35,12 +37,16 @@ class ArboristClient implements Arborist {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ user: { token: jwt } }),
+        body: JSON.stringify({ request: { token: jwt } }),
       }
     ).then(
       (response) => response.json().resources,
-      (err) => [],
+      (err) => {
+        console.log(err);
+        return []
+      }
     );
+    console.log("made request to arborist");
     return resources;
   }
 }
