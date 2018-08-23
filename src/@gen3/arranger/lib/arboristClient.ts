@@ -13,7 +13,7 @@ export interface Arborist {
 class MockArborist implements Arborist {
   baseEndpoint;
   listAuthorizedResources = (jwt: string): string[] => {
-    return ['Proj-1'];
+    return config.mockArboristResources;
   }
 }
 

@@ -45,7 +45,7 @@ app.get('/_status', async function(req, res) {
 app.use(
   (req, res, next) => {
     (req as any).jwt = null;
-    const authHeader = get(req.headers, 'authorization', null);
+    const authHeader = get(req.headers, 'Authorization', null);
     if (authHeader != null) {
       const parts = authHeader.split(' ');
       if (parts.length == 2) {

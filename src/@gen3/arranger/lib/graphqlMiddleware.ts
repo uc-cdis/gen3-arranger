@@ -41,7 +41,5 @@ const authFilterResolver = (resolve, parentArg, args, context, info) => {
 // authFilter is a map from types in the graphql schema to functions with a
 // particular signature which act as GraphQL middleware.
 export const authFilter = {
-  // FIXME (rudyardrichter, 2018-08-01): instead of `subject` use whatever is
-  // the standardized "node" type.
-  subject: authFilterResolver,
+  [config.authFilterNodeType]: authFilterResolver,
 }
