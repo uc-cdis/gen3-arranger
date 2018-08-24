@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "gen3-arranger.fullname" . }}
+  labels:
+    app: {{ template "gen3-arranger.name" . }}
+    chart: {{ template "gen3-arranger.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "gen3-arranger.name" . }}
+    release: {{ .Release.Name }}
