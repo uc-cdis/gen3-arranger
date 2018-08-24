@@ -39,14 +39,7 @@ class ArboristClient implements Arborist {
         body: JSON.stringify({ user: { token: jwt } }),
       }
     ).then(
-      (response) => { 
-        if (response.status == 200){
-          return response.json();
-        }
-        else {
-          return {};
-        }
-      },
+      (response) => response.json(),
       (err) => {
         console.log(err);
         return {};

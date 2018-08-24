@@ -8,8 +8,8 @@ import { singleton as config } from '../lib/config';
 // `context`.
 const authFilterResolver = async (resolve, parentArg, args, context, info) => {
   const data = await arborist.listAuthorizedResources(context.jwt);
-  const resources = data.resources || [];
-  console.log(resources);
+  console.log(data);
+  const resources = data['resources'] || [];
   // We add the `filters` argument with some SQON which will specify that
   // for results having a `project` field, the `project` must be a the list of
   // approved resources. The list of resources is fetched from arborist using
