@@ -6,9 +6,10 @@ import { singleton as config } from '../lib/config';
 // the arguments of a query in order to return only results which are authorized
 // according to arborist, according to the JWT which should be present in the
 // `context`.
-const authFilterResolver = (resolve, parentArg, args, context, info) => {
-  const field = parseResolveInfo(info).name;
-  const resources = arborist.listAuthorizedResources(context.jwt);
+const authFilterResolver = async (resolve, parentArg, args, context, info) => {
+  const data = await arborist.listAuthorizedResources(context.jwt);
+  const resources = data.resources || [];
+  console.log(resources);
   // We add the `filters` argument with some SQON which will specify that
   // for results having a `project` field, the `project` must be a the list of
   // approved resources. The list of resources is fetched from arborist using
@@ -35,6 +36,7 @@ const authFilterResolver = (resolve, parentArg, args, context, info) => {
       },
     ],
   ]
+  console.log(args.filters.content);
   return resolve(parentArg, args, context, info);
 }
 

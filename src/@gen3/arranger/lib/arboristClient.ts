@@ -7,13 +7,13 @@ export interface Arborist {
   // listAuthorizedResources should take a JWT from a request and, according
   // to arborist and according to the policies granted in the token, return a
   // list of the resources which can be viewed.
-  listAuthorizedResources: (string) => string[];
+  listAuthorizedResources: (string) => Promise<object>;
 }
 
 class MockArborist implements Arborist {
   baseEndpoint;
-  listAuthorizedResources = (jwt: string): string[] => {
-    return config.mockArboristResources;
+  listAuthorizedResources = (jwt: string): Promise<object> => {
+    return Promise.resolve(config.mockArboristResources);
   }
 }
 
@@ -22,14 +22,14 @@ class ArboristClient implements Arborist {
   constructor(arboristEndpoint: string) {
     this.baseEndpoint = arboristEndpoint;
   }
-  listAuthorizedResources = (jwt: string): string[] => {
+  listAuthorizedResources = (jwt: string): Promise<object> => {
     if (!jwt) {
       console.log("no JWT in the context; returning no resources");
-      return [];
+      return Promise.resolve({});
     }
     // Make request to arborist for list of resources with access
     const resourcesEndpoint = this.baseEndpoint + '/auth/resources'
-    const resources: string[] = fetch(
+    return fetch(
       resourcesEndpoint,
       {
         method: 'POST',
@@ -39,13 +39,19 @@ class ArboristClient implements Arborist {
         body: JSON.stringify({ user: { token: jwt } }),
       }
     ).then(
-      (response) => response.json().resources,
+      (response) => { 
+        if (response.status == 200){
+          return response.json();
+        }
+        else {
+          return {};
+        }
+      },
       (err) => {
         console.log(err);
-        return []
+        return {};
       }
     );
-    return resources || [];
   }
 }
 
