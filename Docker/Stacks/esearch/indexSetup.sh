@@ -47,6 +47,32 @@ curl -iv -X PUT "${ESHOST}/gen3-dev-subject" \
     }
 }
 '
+
+#
+# Setup `file` index
+#
+curl -iv -X PUT "${ESHOST}/gen3-dev-file" \
+-H 'Content-Type: application/json' -d'
+{
+    "settings" : {
+        "index" : {
+            "number_of_shards" : 1,
+            "number_of_replicas" : 0
+        }
+    },
+    "mappings": {
+      "file": {
+        "properties": {
+          "uuid": { "type": "keyword" },
+          "subject_id": { "type": "keyword" },
+          "project": { "type": "keyword"},
+          "file_name": { "type": "text" }
+        }
+      }
+    }
+}
+'
+
 }
 
 
@@ -175,6 +201,22 @@ Loading record:
 EOM
   curl -X PUT "${ESHOST}/gen3-dev-subject/subject/${COUNT}?pretty" \
        -H 'Content-Type: application/json' "-d@$tmpName"
+
+  # fake file indices related to this subject
+  MIN_FILE_NUM=2
+  MAX_FILE_NUM=5
+  FILE_COUNT=$(( $RANDOM%($MAX_FILE_NUM-$MIN_FILE_NUM)+$MIN_FILE_NUM ))
+  while [[ $FILE_COUNT -gt 0 ]]; do
+    curl -XPOST "${ESHOST}/gen3-dev-file/file?pretty" \
+       -H 'Content-Type: application/json' -d"
+{
+  \"subject_id\": \"${COUNT}\",
+  \"uuid\": \"$(uuidgen)\",
+  \"project\": \"Proj-${projectIndex}\",
+  \"file_name\": \"F$RANDOM\"
+}"
+  let FILE_COUNT-=1
+  done
 
   let COUNT+=1
 done
