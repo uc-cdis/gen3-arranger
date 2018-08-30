@@ -16,7 +16,7 @@ RUN apt-get upgrade -y\
 
 RUN git clone https://github.com/overture-stack/arranger.git \
     && cd arranger \
-    && npm i \
+    && npm ci \
     && npm run bootstrap 
 
 EXPOSE 6060
