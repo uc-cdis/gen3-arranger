@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import * as elasticsearch from 'elasticsearch';
 import * as express from 'express';
 import { Server } from 'http';
@@ -7,7 +8,7 @@ import * as bodyParser from 'body-parser';
 import startProject from '@arranger/server/dist/startProject';
 import { checkHealth } from '../lib/healthCheck';
 import { singleton as config } from '../lib/config';
-
+import { authFilter } from '../lib/graphqlMiddleware';
 
 const app = express();
 const server = new Server(app);
@@ -40,13 +41,43 @@ app.get('/_status', async function(req, res) {
   res.json(status);
 });
 
+// Add middleware to attach JWT from the authorization header to the context.
+app.use(
+  (req, res, next) => {
+    (req as any).jwt = null;
+    const authHeader = get(req.headers, 'authorization', null);
+    if (authHeader != null) {
+      const parts = authHeader.split(' ');
+      if (parts.length == 2) {
+        if (parts[0].toLowerCase() == 'bearer') {
+          (req as any).jwt = parts[1];
+        }
+      }
+    }
+    next();
+  }
+);
 
 const port = 3000;
 const es = new elasticsearch.Client({ host: config.esEndpoint });
 
-startProject(
-  { es, io, id: config.projectId, graphqlOptions: config.graphqlOptions }
-).then(
+// Add some GraphQL middleware which applies an authorization filter to GraphQL
+// requests by checking permissions from arborist.
+const graphqlMiddleware = {
+  // Pass `jwt` field on the context through to the middleware funcitons.
+  context: ({ jwt }) => ({ jwt }),
+  middleware: [authFilter],
+};
+// These graphqlOptions get passed to arranger for setting up the arranger
+// server with this middleware.
+const graphqlOptions = {...graphqlMiddleware, ...config.graphqlOptions}
+
+startProject({
+  es,
+  io,
+  id: config.projectId,
+  graphqlOptions: graphqlOptions,
+}).then(
   (router) => {
     app.use('/search', router);
   },
@@ -54,12 +85,12 @@ startProject(
     console.log('WARNING: arranger project not started', err);
   }
 ).then(
-  function() {
+  () => {
     app.get('/*', function(req, res) {
       res.status(404).json({ "message": "no such path" });
     });    
     server.listen(port, () => {
-      console.log(`⚡️ Listening on port ${port} ⚡️`);
+      console.log(`Listening on port ${port}`);
     });
   }
 );

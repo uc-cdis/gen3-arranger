@@ -12,7 +12,7 @@ services:
     - docker
 
 install:
-    - npm install --force
+    - npm ci
 
 script:
     - npm test
