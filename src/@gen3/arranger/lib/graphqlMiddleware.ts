@@ -8,7 +8,6 @@ import { singleton as config } from '../lib/config';
 // `context`.
 const authFilterResolver = async (resolve, parentArg, args, context, info) => {
   const data = await arborist.listAuthorizedResources(context.jwt);
-  console.log(data);
   const resources = data['resources'] || [];
   // We add the `filters` argument with some SQON which will specify that
   // for results having a `project` field, the `project` must be a the list of
@@ -36,7 +35,6 @@ const authFilterResolver = async (resolve, parentArg, args, context, info) => {
       },
     ],
   ]
-  console.log(args.filters.content);
   return resolve(parentArg, args, context, info);
 }
 
