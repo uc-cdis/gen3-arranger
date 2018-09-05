@@ -23,11 +23,20 @@ export class Configuration {
   authFilterFieldParser = (authField: string): string => {
     return authField;
   };
+
+  /**
+   * @property debug
+   * Enable verbose logging
+   */
+  debug: boolean = false;
 }
 
 export const singleton = new Configuration()
 
 // Set default values based on environment variables
+if (process.env['GEN3_DEBUG']) {
+  singleton.debug = true;
+}
 if (process.env['GEN3_ES_ENDPOINT']) {
   singleton.esEndpoint = process.env['GEN3_ES_ENDPOINT'];
 }
