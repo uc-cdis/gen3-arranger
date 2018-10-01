@@ -21,5 +21,5 @@ RUN git clone https://github.com/overture-stack/arranger.git \
 
 EXPOSE 5050
 
-WORKDIR /arranger
-CMD npm run server
+WORKDIR /arranger/modules/server
+CMD npm run run-prod
