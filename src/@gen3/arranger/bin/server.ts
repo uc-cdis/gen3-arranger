@@ -33,7 +33,7 @@ app.use(router);
 app.get('/_status', async function(req, res) {
   console.log('Processing /_status');
   const status = await checkHealth();
-  if (!status.isHealthy) {
+  if (!status.isHealthy || !projectStarted) {
     res = res.status(500);
   }
   res.json(status);
@@ -70,6 +70,8 @@ const graphqlMiddleware = {
 // server with this middleware.
 const graphqlOptions = {...graphqlMiddleware, ...config.graphqlOptions}
 
+let projectStarted = false;
+
 startProject({
   es,
   io,
@@ -81,6 +83,7 @@ startProject({
   },
   (err) => {
     console.log('WARNING: arranger project not started', err);
+    projectStarted = false;
   }
 ).then(
   () => {
@@ -90,5 +93,6 @@ startProject({
     server.listen(port, () => {
       console.log(`Listening on port ${port}`);
     });
+    projectStarted = true;
   }
 );
