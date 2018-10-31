@@ -39,11 +39,18 @@ class ArboristClient implements Arborist {
         body: JSON.stringify({ user: { token: jwt } }),
       }
     ).then(
-      (response) => response.json(),
-      (err) => {
-        console.log(err);
-        return {};
-      }
+        (response) => {
+            if (response.ok) {
+                return response.json()
+            }
+            else {
+                console.log(response.json())
+                return {}
+            }},
+        (err) => {
+            console.log(err);
+            return {};
+        }
     );
   }
 }
