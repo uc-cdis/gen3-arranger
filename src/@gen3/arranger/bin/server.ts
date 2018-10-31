@@ -70,6 +70,8 @@ const graphqlMiddleware = {
 // server with this middleware.
 const graphqlOptions = {...graphqlMiddleware, ...config.graphqlOptions}
 
+// tracks status of whether project started successfully or not
+// used to determine health status
 let projectStarted = false;
 
 startProject({
