@@ -6,7 +6,7 @@ import * as socketIO from 'socket.io';
 import 'regenerator-runtime/runtime';
 import * as bodyParser from 'body-parser';
 import startProject from '@arranger/server/dist/startProject';
-import { checkHealth } from '../lib/healthCheck';
+import { getHealth, setProjectStarted } from '../lib/healthCheck';
 import { singleton as config } from '../lib/config';
 import { authFilter } from '../lib/graphqlMiddleware';
 
@@ -32,8 +32,8 @@ app.use(router);
 
 app.get('/_status', async function(req, res) {
   console.log('Processing /_status');
-  const status = await checkHealth();
-  if (!status.isHealthy || !projectStarted) {
+  const status = await getHealth();
+  if (!status.isHealthy || !status.projectStarted) {
     res = res.status(500);
   }
   res.json(status);
@@ -70,10 +70,6 @@ const graphqlMiddleware = {
 // server with this middleware.
 const graphqlOptions = {...graphqlMiddleware, ...config.graphqlOptions}
 
-// tracks status of whether project started successfully or not
-// used to determine health status
-let projectStarted = false;
-
 startProject({
   es,
   io,
@@ -85,7 +81,7 @@ startProject({
   },
   (err) => {
     console.log('WARNING: arranger project not started', err);
-    projectStarted = false;
+    setProjectStarted(false);
   }
 ).then(
   () => {
@@ -95,6 +91,6 @@ startProject({
     server.listen(port, () => {
       console.log(`Listening on port ${port}`);
     });
-    projectStarted = true;
+    setProjectStarted(true);
   }
 );
