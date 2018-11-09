@@ -78,6 +78,7 @@ startProject({
 }).then(
   (router) => {
     app.use('/search', router);
+    setProjectStarted(true);
   },
   (err) => {
     console.log('WARNING: arranger project not started', err);
@@ -91,6 +92,5 @@ startProject({
     server.listen(port, () => {
       console.log(`Listening on port ${port}`);
     });
-    setProjectStarted(true);
   }
 );

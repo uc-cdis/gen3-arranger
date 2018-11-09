@@ -41,7 +41,7 @@ export function getHealth():Promise<HealthStatus> {
  */
 export function setProjectStarted(success: boolean):HealthStatus {
   healthStatus.projectStarted = success;
-  healthStatus.message = success ? healthStatus.message : 'Failed to start project';
+  healthStatus.message = success ? 'ok' : 'Failed to start project';
   return {...healthStatus}
 }
 
