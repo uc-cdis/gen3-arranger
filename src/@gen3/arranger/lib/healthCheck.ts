@@ -12,7 +12,7 @@ function newHealthStatus():HealthStatus {
   return {
       isHealthy: true,
       message: 'Project not yet started',
-      projectStarted: true,
+      projectStarted: false,
   }
 }
 

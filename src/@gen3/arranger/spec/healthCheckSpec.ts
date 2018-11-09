@@ -5,9 +5,9 @@ describe('the healthCheckModule', function() {
     resetHealth();
   });
 
-  it('should be healthy initially', async function() {
+  it('should not be healthy initially', async function() {
     const status = await getHealth();
-    expect(status.isHealthy).toBe(true, `healthStatus: ${JSON.stringify(status)}`);
+    expect(status.isHealthy).toBe(false, `healthStatus: ${JSON.stringify(status)}`);
   });
 
   it('after setProjectStarted true isHealthy true', async function() {
