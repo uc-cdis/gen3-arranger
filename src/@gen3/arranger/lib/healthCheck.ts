@@ -8,15 +8,25 @@ export interface HealthStatus {
 // Manages health state internally
 const healthStatus = {
   isHealthy: true,
-  message: 'ok',
-  projectStarted: false,
+  message: 'Project not yet started',
+  projectStarted: null,
 };
+
+/**
+ * Updates the isHealthy attribute by checking relevant health properties
+ * Used for determining if arranger is healthy
+ */
+function updateIsHealthy() {
+  healthStatus.isHealthy = healthStatus.isHealthy
+      && healthStatus.projectStarted !== false;
+}
 
 /**
  * Returns current Health Status
  * @returns {Promise<HealthStatus>}
  */
 export function getHealth():Promise<HealthStatus> {
+  updateIsHealthy();
   return Promise.resolve({...healthStatus});
 }
 
@@ -27,5 +37,6 @@ export function getHealth():Promise<HealthStatus> {
  */
 export function setProjectStarted(success: boolean):HealthStatus {
   healthStatus.projectStarted = success;
+  healthStatus.message = success ? 'Successfully started project' : 'Failed to start project';
   return {...healthStatus}
 }

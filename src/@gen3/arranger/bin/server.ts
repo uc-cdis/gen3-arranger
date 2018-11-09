@@ -33,7 +33,7 @@ app.use(router);
 app.get('/_status', async function(req, res) {
   console.log('Processing /_status');
   const status = await getHealth();
-  if (!status.isHealthy || !status.projectStarted) {
+  if (!status.isHealthy) {
     res = res.status(500);
   }
   res.json(status);
