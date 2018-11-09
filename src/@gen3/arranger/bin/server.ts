@@ -6,7 +6,7 @@ import * as socketIO from 'socket.io';
 import 'regenerator-runtime/runtime';
 import * as bodyParser from 'body-parser';
 import startProject from '@arranger/server/dist/startProject';
-import { checkHealth } from '../lib/healthCheck';
+import { getHealth, setProjectStarted } from '../lib/healthCheck';
 import { singleton as config } from '../lib/config';
 import { authFilter } from '../lib/graphqlMiddleware';
 
@@ -32,7 +32,7 @@ app.use(router);
 
 app.get('/_status', async function(req, res) {
   console.log('Processing /_status');
-  const status = await checkHealth();
+  const status = await getHealth();
   if (!status.isHealthy) {
     res = res.status(500);
   }
@@ -78,9 +78,11 @@ startProject({
 }).then(
   (router) => {
     app.use('/search', router);
+    setProjectStarted(true);
   },
   (err) => {
     console.log('WARNING: arranger project not started', err);
+    setProjectStarted(false);
   }
 ).then(
   () => {
