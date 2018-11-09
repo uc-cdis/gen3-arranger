@@ -1,4 +1,3 @@
-import { parseResolveInfo } from "graphql-parse-resolve-info";
 import { singleton as arborist } from '../lib/arboristClient';
 import { singleton as config } from '../lib/config';
 
@@ -38,8 +37,15 @@ const authFilterResolver = async (resolve, parentArg, args, context, info) => {
   return resolve(parentArg, args, context, info);
 }
 
+// Build up dictionary which just maps all the node types we want the
+// authorization filter to work on to this same filter function. Used for the
+// graphql middleware for arranger.
+var authFilterTmp = {};
+for (var i = 0; i < config.authFilterNodeTypes.length; i++) {
+  var node_type = config.authFilterNodeTypes[i];
+  authFilterTmp[node_type] = authFilterResolver;
+}
+
 // authFilter is a map from types in the graphql schema to functions with a
 // particular signature which act as GraphQL middleware.
-export const authFilter = {
-  [config.authFilterNodeType]: authFilterResolver,
-}
+export const authFilter = authFilterTmp;
