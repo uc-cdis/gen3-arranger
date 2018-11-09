@@ -2,7 +2,7 @@
 export interface HealthStatus {
   isHealthy: boolean;
   message: string;
-  projectStarted: boolean;
+  projectStarted: boolean | null;
 }
 
 // Manages health state internally
@@ -18,7 +18,7 @@ const healthStatus = {
  */
 function updateIsHealthy() {
   healthStatus.isHealthy = healthStatus.isHealthy
-      && (healthStatus.projectStarted === true || healthStatus.projectStarted === null);
+      && healthStatus.projectStarted !== false;
 }
 
 /**
