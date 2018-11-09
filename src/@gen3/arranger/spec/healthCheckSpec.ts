@@ -1,6 +1,10 @@
-import { getHealth, setProjectStarted } from '../lib/healthCheck';
+import { getHealth, setProjectStarted, resetHealth } from '../lib/healthCheck';
 
 describe('the healthCheckModule', function() {
+  beforeEach(function () {
+    resetHealth();
+  });
+
   it('should be healthy initially', async function() {
     const status = await getHealth();
     expect(status.isHealthy).toBe(true, `healthStatus: ${JSON.stringify(status)}`);

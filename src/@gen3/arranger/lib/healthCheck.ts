@@ -2,15 +2,19 @@
 export interface HealthStatus {
   isHealthy: boolean;
   message: string;
-  projectStarted: boolean | null;
+  projectStarted: boolean;
 }
 
 // Manages health state internally
-const healthStatus = {
-  isHealthy: true,
-  message: 'Project not yet started',
-  projectStarted: null,
-};
+let healthStatus = newHealthStatus();
+
+function newHealthStatus():HealthStatus {
+  return {
+      isHealthy: true,
+      message: 'Project not yet started',
+      projectStarted: false,
+  }
+}
 
 /**
  * Updates the isHealthy attribute by checking relevant health properties
@@ -18,7 +22,7 @@ const healthStatus = {
  */
 function updateIsHealthy() {
   healthStatus.isHealthy = healthStatus.isHealthy
-      && (healthStatus.projectStarted === true || healthStatus.projectStarted === null);
+      && healthStatus.projectStarted;
 }
 
 /**
@@ -39,4 +43,8 @@ export function setProjectStarted(success: boolean):HealthStatus {
   healthStatus.projectStarted = success;
   healthStatus.message = success ? healthStatus.message : 'Failed to start project';
   return {...healthStatus}
+}
+
+export function resetHealth() {
+  healthStatus = newHealthStatus();
 }
