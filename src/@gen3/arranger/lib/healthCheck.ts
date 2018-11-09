@@ -18,7 +18,7 @@ const healthStatus = {
  */
 function updateIsHealthy() {
   healthStatus.isHealthy = healthStatus.isHealthy
-      && healthStatus.projectStarted !== false;
+      && (healthStatus.projectStarted === true || healthStatus.projectStarted === null);
 }
 
 /**
