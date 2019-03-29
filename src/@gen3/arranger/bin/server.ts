@@ -78,6 +78,10 @@ startProject({
 }).then(
   (router) => {
     app.use('/search', router);
+    app.use((req, res, next) => {
+      console.log(res);
+      next();
+    });
     setProjectStarted(true);
   },
   (err) => {
@@ -88,7 +92,7 @@ startProject({
   () => {
     app.get('/*', function(req, res) {
       res.status(404).json({ "message": "no such path" });
-    });    
+    });
     server.listen(port, () => {
       console.log(`Listening on port ${port}`);
     });
