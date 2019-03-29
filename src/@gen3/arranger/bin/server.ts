@@ -64,7 +64,7 @@ const es = new elasticsearch.Client({ host: config.esEndpoint });
 const graphqlMiddleware = {
   // Pass `jwt` field on the context through to the middleware funcitons.
   context: ({ jwt }) => ({ jwt }),
-  middleware: [authFilter],
+  //middleware: [authFilter],
 };
 // These graphqlOptions get passed to arranger for setting up the arranger
 // server with this middleware.
