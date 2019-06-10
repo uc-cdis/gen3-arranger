@@ -45,6 +45,9 @@ if (process.env['GEN3_ES_ENDPOINT']) {
 if (process.env['GEN3_ARBORIST_ENDPOINT']) {
   singleton.arboristEndpoint = process.env['GEN3_ARBORIST_ENDPOINT'];
 }
+if (process.env['GEN3_ARBORIST_ENDPOINT_OVERRIDE']) {
+  singleton.arboristEndpoint = process.env['GEN3_ARBORIST_ENDPOINT_OVERRIDE'];
+}
 if (process.env['GEN3_AUTH_FILTER_FIELD']) {
   singleton.authFilterField = process.env['GEN3_AUTH_FILTER_FIELD'];
 }
