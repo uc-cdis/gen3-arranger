@@ -1,4 +1,4 @@
-# To run: docker run -d --name=dataportal -p 80:80 quay.io/cdis/data-portal 
+# To run: docker run -d --name=dataportal -p 80:80 quay.io/cdis/data-portal
 # To check running container: docker exec -it dataportal /bin/bash
 
 FROM ubuntu:16.04
@@ -13,13 +13,13 @@ RUN apt-get upgrade -y \
         git \
         sudo \
         vim \
-    && curl -sL https://deb.nodesource.com/setup_10.x | bash - \ 
+    && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 #
 # In standard prod these will be overwritten by volume mounts
-# Provided here for ease of use in development and 
+# Provided here for ease of use in development and
 # non-standard deployment environments
 #
 RUN mkdir /mnt/ssl \
@@ -28,7 +28,7 @@ COPY . /arranger
 RUN useradd -m -s /bin/bash gen3 \
   && chown -R gen3: /arranger \
   && cp /arranger/dockerHelpers/sudoers /etc/sudoers \
-  && rm /arranger/dockerHelpers/sudoers 
+  && rm /arranger/dockerHelpers/sudoers
 
 USER gen3
 
@@ -40,7 +40,7 @@ RUN COMMIT=`git rev-parse HEAD` && echo "export const arrangerCommit = \"${COMMI
     && npm ci \
     && npm run compile
 
-# 
+#
 # Do some cleanup to trim down the image
 #
 USER root
