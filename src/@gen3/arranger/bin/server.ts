@@ -88,7 +88,7 @@ startProject({
   () => {
     app.get('/*', function(req, res) {
       res.status(404).json({ "message": "no such path" });
-    });    
+    });
     server.listen(port, () => {
       console.log(`Listening on port ${port}`);
     });

@@ -33,8 +33,8 @@ curl -iv -X PUT "${ESHOST}/gen3-dev-subject" \
 {
     "settings" : {
         "index" : {
-            "number_of_shards" : 1, 
-            "number_of_replicas" : 0 
+            "number_of_shards" : 1,
+            "number_of_replicas" : 0
         }
     },
     "mappings": {
@@ -102,7 +102,7 @@ function es_export() {
 }
 
 #
-# Import the arranger config indexes dumped with es_export 
+# Import the arranger config indexes dumped with es_export
 #
 function es_import() {
   local sourceFolder
@@ -251,8 +251,8 @@ curl  -X POST https://abby.planx-pla.net/api/v0/flat-search/search/graphql -H 'C
 curl  -X POST https://abby.planx-pla.net/api/v0/flat-search/search/graphql \
 -H 'Content-Type: application/json' -d'
 {
-"query":"query subject($sqon: JSON, $include_missing: Boolean) { 
-  subject { 
+"query":"query subject($sqon: JSON, $include_missing: Boolean) {
+  subject {
     hits( filters: $sqon) { total }
     aggregations(filters: $sqon, include_missing: $include_missing) {
       size {

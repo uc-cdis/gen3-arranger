@@ -10,14 +10,14 @@ RUN apt-get upgrade -y\
         git \
         sudo \
         vim \
-    && curl -sL https://deb.nodesource.com/setup_10.x | bash - \ 
+    && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/overture-stack/arranger.git \
     && cd arranger \
     && npm i \
-    && npm run bootstrap 
+    && npm run bootstrap
 
 EXPOSE 6060
 

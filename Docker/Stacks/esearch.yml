@@ -64,6 +64,6 @@ services:
 
 volumes:
   esdata:
-  
+
 networks:
   es:

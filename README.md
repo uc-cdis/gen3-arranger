@@ -8,7 +8,7 @@ The @arranger code is licensed under the [AGPL](https://github.com/overture-stac
 
 ## Scripts
 
-Note that the code under `src/` is [typescript](https://www.typescriptlang.org/), 
+Note that the code under `src/` is [typescript](https://www.typescriptlang.org/),
 so there's a compile step
 to generate the javascript code under `lib/`, `bin/`, and `spec/`.
 The following scripts are registered in `package.json`:
@@ -30,4 +30,3 @@ Override the default configuration with environment variables:
 ## Docker
 
 (Quay)[https://quay.io/repository/cdis/arranger]
-
