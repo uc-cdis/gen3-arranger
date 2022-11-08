@@ -32,7 +32,7 @@
     "jasmine": "^3.1.0",
     "jasmine-core": "^3.1.0",
     "lodash": "^4.17.13",
-    "node-fetch": "^1.7.3",
+    "node-fetch": "^2.6.1",
     "typescript": "^2.9.2",
     "typescript-eslint-parser": "^16.0.1"
   },
